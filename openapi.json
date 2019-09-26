@@ -1,0 +1,175 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Hashing API",
+        "description": "Web service to compute a multi-round SHA-512 hash",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Nikita Boldasov",
+            "email": "renom7@gmail.com"
+        }
+    },
+    "paths": {
+        "/v1/tasks": {
+            "post": {
+                "summary": "Add a task to compute a hash",
+                "operationId": "postTask",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TaskForm"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskInProgress"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/tasks/{taskId}": {
+            "get": {
+                "summary": "Get a single task",
+                "operationId": "getTask",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/taskId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskFinished"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "TaskInProgress": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/id"
+                    },
+                    "payload": {
+                        "$ref": "#/components/schemas/payload"
+                    },
+                    "hash_rounds_cnt": {
+                        "$ref": "#/components/schemas/hash_rounds_cnt"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/statusInProgress"
+                    }
+                }
+            },
+            "TaskFinished": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/id"
+                    },
+                    "payload": {
+                        "$ref": "#/components/schemas/payload"
+                    },
+                    "hash_rounds_cnt": {
+                        "$ref": "#/components/schemas/hash_rounds_cnt"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/statusFinished"
+                    },
+                    "hash": {
+                        "$ref": "#/components/schemas/hash"
+                    }
+                }
+            },
+            "TaskForm": {
+                "type": "object",
+                "required": [
+                    "payload",
+                    "hash_rounds_cnt"
+                ],
+                "properties": {
+                    "payload": {
+                        "$ref": "#/components/schemas/payload"
+                    },
+                    "hash_rounds_cnt": {
+                        "$ref": "#/components/schemas/hash_rounds_cnt"
+                    }
+                }
+            },
+            "id": {
+                "type": "string",
+                "format": "uuid"
+            },
+            "payload": {
+                "type": "string",
+                "maxLength": 1024
+            },
+            "hash_rounds_cnt": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 32
+            },
+            "status": {
+                "type": "string",
+                "enum": ["in progress", "finished"]
+            },
+            "statusInProgress": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/status"
+                    },
+                    {
+                        "default": "in progress"
+                    }
+                ]
+            },
+            "statusFinished": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/status"
+                    },
+                    {
+                        "default": "finished"
+                    }
+                ]
+            },
+            "hash": {
+                "type": "string",
+                "minLength": 1024,
+                "maxLength": 1024
+            }
+        },
+        "parameters": {
+            "taskId": {
+                "name": "taskId",
+                "in": "path",
+                "description": "Task ID",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/id"
+                }
+            }
+        }
+    }
+}

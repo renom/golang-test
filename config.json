@@ -1,0 +1,8 @@
+{
+	"port": 8080,
+	"dbhost": "localhost",
+	"dbport": 5432,
+	"dbuser": "dbuser",
+	"dbpassword": "dbpassword",
+	"dbname": "dbname"
+}
